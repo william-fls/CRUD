@@ -1,14 +1,14 @@
 const express = require('express');
-const testeController = require('../controllers/capivaraController');
+const capivaraController = require('../controllers/capivaraController');
 const router = express.Router();
 
-router.get('/', capivaraController.getAllTeste);
-router.get('/search', capivaraController.searchTeste);
+router.get('/', capivaraController.getAllcapivara);
+router.get('/search', capivaraController.searchcapivara);
 router.get('/new', capivaraController.renderCreateForm);
-router.post('/', capivaraController.createTeste);
-router.get('/:id', capivaraController.getTesteById);
+router.post('/', capivaraController.createcapivara);
+router.get('/:id', capivaraController.getcapivaraById);
 router.get('/:id/edit', capivaraController.renderEditForm);
-router.put('/:id', capivaraController.updateTeste);
-router.delete('/:id', capivaraController.deleteTeste);
+router.put('/:id', capivaraController.updatecapivara);
+router.delete('/:id', capivaraController.deletecapivara);
 
 module.exports = router;
