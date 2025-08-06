@@ -1,16 +1,19 @@
 const Categoria = require('../models/Categoria');
+const Produto = require('../models/Produto');
+const { Op } = require('sequelize');
 
 const categoriaController = {
     createCategoria: async (req, res) => {
         try {
-            const newCategoria = {
-                nome: req.body.nome
+            const novaCategoria = {
+                nome: req.body.nome,
+                descricao: req.body.descricao,
             };
 
-            await Categoria.create(newCategoria);
+            await Categoria.create(novaCategoria);
             res.redirect('/categorias');
         } catch (error) {
-            console.error('Error creating categoria:', error);
+            console.error('Erro ao criar categoria:', error);
             res.status(500).json({ error: error.message });
         }
     },
@@ -21,24 +24,22 @@ const categoriaController = {
             const categoria = await Categoria.findByPk(categoriaId);
 
             if (!categoria) {
-                return res.status(404).json({ message: 'Categoria not found' });
+                return res.status(404).json({ message: 'Categoria não encontrada' });
             }
 
             res.render('categorias/show', { categoria });
         } catch (error) {
-            console.error('Error fetching categoria:', error);
+            console.error('Erro ao buscar categoria:', error);
             res.status(500).json({ error: error.message });
         }
     },
 
     getAllCategorias: async (req, res) => {
         try {
-            const categorias = await Categoria.findAll({
-                order: [['id', 'ASC']]
-            });
+            const categorias = await Categoria.findAll({ order: [['id', 'ASC']] });
             res.render('categorias/index', { categorias });
         } catch (error) {
-            console.error('Error fetching categorias:', error);
+            console.error('Erro ao buscar categorias:', error);
             res.status(500).json({ error: error.message });
         }
     },
@@ -53,12 +54,12 @@ const categoriaController = {
             const categoria = await Categoria.findByPk(categoriaId);
 
             if (!categoria) {
-                return res.status(404).json({ message: 'Categoria not found' });
+                return res.status(404).json({ message: 'Categoria não encontrada' });
             }
 
             res.render('categorias/edit', { categoria });
         } catch (error) {
-            console.error('Error fetching categoria for edit:', error);
+            console.error('Erro ao carregar edição da categoria:', error);
             res.status(500).json({ error: error.message });
         }
     },
@@ -66,21 +67,22 @@ const categoriaController = {
     updateCategoria: async (req, res) => {
         try {
             const categoriaId = req.params.id;
-            const updatedCategoria = {
-                nome: req.body.nome
+            const dadosAtualizados = {
+                nome: req.body.nome,
+                descricao: req.body.descricao,
             };
 
-            const [updated] = await Categoria.update(updatedCategoria, {
+            const [updated] = await Categoria.update(dadosAtualizados, {
                 where: { id: categoriaId }
             });
 
             if (updated) {
                 res.redirect('/categorias');
             } else {
-                res.status(404).json({ message: 'Categoria not found' });
+                res.status(404).json({ message: 'Categoria não encontrada' });
             }
         } catch (error) {
-            console.error('Error updating categoria:', error);
+            console.error('Erro ao atualizar categoria:', error);
             res.status(500).json({ error: error.message });
         }
     },
@@ -88,6 +90,13 @@ const categoriaController = {
     deleteCategoria: async (req, res) => {
         try {
             const categoriaId = req.params.id;
+
+            // Excluir produtos relacionados primeiro
+            await Produto.destroy({
+                where: { categoriaId }
+            });
+
+            // Depois excluir a categoria
             const deleted = await Categoria.destroy({
                 where: { id: categoriaId }
             });
@@ -95,13 +104,33 @@ const categoriaController = {
             if (deleted) {
                 res.redirect('/categorias');
             } else {
-                res.status(404).json({ message: 'Categoria not found' });
+                res.status(404).json({ message: 'Categoria não encontrada' });
             }
         } catch (error) {
-            console.error('Error deleting categoria:', error);
+            console.error('Erro ao excluir categoria:', error);
             res.status(500).json({ error: error.message });
         }
-    }
+    },
+
+    searchCategoria: async (req, res) => {
+        try {
+            const search = req.query.search || '';
+
+            const resultados = await Categoria.findAll({
+                where: {
+                    nome: {
+                        [Op.like]: `%${search}%`
+                    }
+                },
+                order: [['id', 'ASC']]
+            });
+
+            res.json({ categorias: resultados });
+        } catch (error) {
+            console.error('Erro ao buscar categorias:', error);
+            res.status(500).json({ error: error.message });
+        }
+    },
 };
 
 module.exports = categoriaController;

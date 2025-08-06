@@ -9,7 +9,8 @@ const User = sequelize.define('User', {
     },
     username: {
         type: DataTypes.STRING(255),
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     password: {
         type: DataTypes.STRING(255),
@@ -24,3 +25,5 @@ const User = sequelize.define('User', {
     tableName: 'users',
     timestamps: false
 });
+
+module.exports = User;

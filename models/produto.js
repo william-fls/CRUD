@@ -30,5 +30,7 @@ const Produto = sequelize.define('Produto', {
     }
 }, {
     tableName: 'produtos',
-    timestamps: false
+    timestamps: false // 🔧 importante para evitar erro com createdAt e updatedAt
 });
+
+module.exports = Produto;
