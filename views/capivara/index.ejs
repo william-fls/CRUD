@@ -1,9 +1,9 @@
-<h1>Lista de capivara</h1>
+<h1>Lista de capivaras</h1>
 
 <form id="searchForm" method="GET" action="/capivara">
   <div class="form-group">
     <label for="search">Buscar capivara:</label>
-    <input type="text" id="search" name="search" class="form-control" placeholder="Digite o nome do capivara" autocomplete="off">
+    <input type="text" id="search" name="search" class="form-control" placeholder="Digite o nome da capivara" autocomplete="off">
   </div>
 </form>
 
@@ -17,15 +17,15 @@
     </tr>
   </thead>
   <tbody id="capivaraTableBody">
-    <% capivara.forEach(t => { %>
+    <% capivara.forEach(c => { %>
       <tr>
-        <td><%= t.id %></td>
-        <td><%= t.nome %></td>
-        <td><%= t.descricao %></td>
+        <td><%= c.id %></td>
+        <td><%= c.nome %></td>
+        <td><%= c.descricao %></td>
         <td>
-          <a href="/capivara/<%= t.id %>" class="btn btn-primary">View</a>
-          <a href="/capivara/<%= t.id %>/edit" class="btn btn-warning">Edit</a>
-          <form action="/capivara/<%= t.id %>?_method=DELETE" method="POST" style="display:inline;">
+          <a href="/capivara/<%= c.id %>" class="btn btn-primary">View</a>
+          <a href="/capivara/<%= c.id %>/edit" class="btn btn-warning">Edit</a>
+          <form action="/capivara/<%= c.id %>?_method=DELETE" method="POST" style="display:inline;">
             <button type="submit" class="btn btn-danger">Delete</button>
           </form>
         </td>
@@ -44,16 +44,16 @@
         const tbody = document.getElementById('capivaraTableBody');
         tbody.innerHTML = ''; // Limpa a tabela
 
-        data.usuarios.forEach(t => {
+        data.capivara.forEach(c => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${t.id}</td>
-            <td>${t.nome}</td>
-            <td>${t.descricao}</td>
+            <td>${c.id}</td>
+            <td>${c.nome}</td>
+            <td>${c.descricao}</td>
             <td>
-              <a href="/capivara/${t.id}" class="btn btn-primary">View</a>
-              <a href="/capivara/${t.id}/edit" class="btn btn-warning">Edit</a>
-              <form action="/capivara/${t.id}?_method=DELETE" method="POST" style="display:inline;">
+              <a href="/capivara/${c.id}" class="btn btn-primary">View</a>
+              <a href="/capivara/${c.id}/edit" class="btn btn-warning">Edit</a>
+              <form action="/capivara/${c.id}?_method=DELETE" method="POST" style="display:inline;">
                 <button type="submit" class="btn btn-danger">Delete</button>
               </form>
             </td>

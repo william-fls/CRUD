@@ -1,83 +1,106 @@
-const Categoria = require('../models/categoriaModel');
+const Categoria = require('../models/Categoria');
 
 const categoriaController = {
-    createCategoria: (req, res) => {
-        const newCategoria = {
-            nome: req.body.nome
-        };
+    createCategoria: async (req, res) => {
+        try {
+            const newCategoria = {
+                nome: req.body.nome
+            };
 
-        Categoria.create(newCategoria, (err, categoriaId) => {
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
+            await Categoria.create(newCategoria);
             res.redirect('/categorias');
-        });
+        } catch (error) {
+            console.error('Error creating categoria:', error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
-    getCategoriaById: (req, res) => {
-        const categoriaId = req.params.id;
+    getCategoriaById: async (req, res) => {
+        try {
+            const categoriaId = req.params.id;
+            const categoria = await Categoria.findByPk(categoriaId);
 
-        Categoria.findById(categoriaId, (err, categoria) => {
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
             if (!categoria) {
                 return res.status(404).json({ message: 'Categoria not found' });
             }
+
             res.render('categorias/show', { categoria });
-        });
+        } catch (error) {
+            console.error('Error fetching categoria:', error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
-    getAllCategorias: (req, res) => {
-        Categoria.getAll((err, categorias) => {
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
+    getAllCategorias: async (req, res) => {
+        try {
+            const categorias = await Categoria.findAll({
+                order: [['id', 'ASC']]
+            });
             res.render('categorias/index', { categorias });
-        });
+        } catch (error) {
+            console.error('Error fetching categorias:', error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
     renderCreateForm: (req, res) => {
         res.render('categorias/create');
     },
 
-    renderEditForm: (req, res) => {
-        const categoriaId = req.params.id;
+    renderEditForm: async (req, res) => {
+        try {
+            const categoriaId = req.params.id;
+            const categoria = await Categoria.findByPk(categoriaId);
 
-        Categoria.findById(categoriaId, (err, categoria) => {
-            if (err) {
-                return res.status(500).json({ error: err });
-            }
             if (!categoria) {
                 return res.status(404).json({ message: 'Categoria not found' });
             }
+
             res.render('categorias/edit', { categoria });
-        });
+        } catch (error) {
+            console.error('Error fetching categoria for edit:', error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
-    updateCategoria: (req, res) => {
-        const categoriaId = req.params.id;
-        const updatedCategoria = {
-            nome: req.body.nome
-        };
+    updateCategoria: async (req, res) => {
+        try {
+            const categoriaId = req.params.id;
+            const updatedCategoria = {
+                nome: req.body.nome
+            };
 
-        Categoria.update(categoriaId, updatedCategoria, (err) => {
-            if (err) {
-                return res.status(500).json({ error: err });
+            const [updated] = await Categoria.update(updatedCategoria, {
+                where: { id: categoriaId }
+            });
+
+            if (updated) {
+                res.redirect('/categorias');
+            } else {
+                res.status(404).json({ message: 'Categoria not found' });
             }
-            res.redirect('/categorias');
-        });
+        } catch (error) {
+            console.error('Error updating categoria:', error);
+            res.status(500).json({ error: error.message });
+        }
     },
 
-    deleteCategoria: (req, res) => {
-        const categoriaId = req.params.id;
+    deleteCategoria: async (req, res) => {
+        try {
+            const categoriaId = req.params.id;
+            const deleted = await Categoria.destroy({
+                where: { id: categoriaId }
+            });
 
-        Categoria.delete(categoriaId, (err) => {
-            if (err) {
-                return res.status(500).json({ error: err });
+            if (deleted) {
+                res.redirect('/categorias');
+            } else {
+                res.status(404).json({ message: 'Categoria not found' });
             }
-            res.redirect('/categorias');
-        });
+        } catch (error) {
+            console.error('Error deleting categoria:', error);
+            res.status(500).json({ error: error.message });
+        }
     }
 };
 
